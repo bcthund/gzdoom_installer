@@ -5,7 +5,11 @@ So I decided to build gzdoom from source but I carefully documented and scripted
 
 The script comes with a copy of gzdoom and zmusic sources that were used when the script was created and can compile from those. The script will give you the option to pull the current sources as well which should work as long as dependencies don't change. If the dependencies have changed then the included source should work provided the distribution has all the dependencies requested to be installed by apt, the full list is below.
 
-Each stage of the script will confirm if you want to continue, giving you the option to stop should errors occur. Pressing CTRL+C is captured and will result in the script automatically removing the temporary build directories. The second to last step is to install into ~/Games/gzdoom by default. If you don't do this then you need to say no to removing './src/gzdoom_tmp' in the last step. You can move the './src/gzdoom_tmp/gzdoom' folder to wherever you want or 'sudo make install' if you desire.
+Each stage of the script will confirm if you want to continue, giving you the option to stop should errors occur. Pressing CTRL+C is captured and will result in the script automatically removing the temporary build directories.
+
+You are given the option to 'make install' gzdoom if you desire, if you do not then you should say no to removing './src/gzdoom_tmp' when asked. The build will be in './src/gzdoom_tmp/gzdoom/build' which you can put where you like.
+
+The final step will ask if you want to install the Addons which includes Brutal Doom, high resolution textures, and recomposed music as well as a few other items. You will need to download the Addon zip file from <a href="https://drive.google.com/file/d/1xYo4_OEfLFkCZ7vyHQTBPJ2yC10h0g5g/view?usp=sharing">HERE</a> and extract it into the base folder. You should end up with a './src/gzdoom-src/config' folder. This should be done before starting the gzdoom.sh install script.
 
 # Packages for Reference (installed automatically):
 <pre>
