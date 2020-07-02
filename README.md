@@ -32,7 +32,7 @@ Each stage of the script will confirm if you want to continue, giving you the op
 </pre>
 
 # Addons
-The followind wads and pk3 files can be downloaded from "here...coming soon". Or they can be downloaded manually by searching for them online. Some of these come with gzdoom already, check in '/usr/local/share/games/doom/' for them.
+The followind wads and pk3 files can be downloaded from <a href="https://drive.google.com/file/d/1xYo4_OEfLFkCZ7vyHQTBPJ2yC10h0g5g/view?usp=sharing">HERE</a>. Or they can be downloaded manually by searching for them online. Some of these come with gzdoom already, check in '/usr/local/share/games/doom/' for them.
 <pre>
   gzdoom.ini
   brightmaps.pk3
