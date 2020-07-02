@@ -167,7 +167,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     
     # gzdoom Extras
         echo
-        printf "${BLUE}Install Addons - You will need to download the config pack for this to work${NC}"
+        printf "${BLUE}Install Addons - You will need to download the config pack for this to work, see the README.${NC}"
         echo "${YELLOW}\t - gzdoom.ini (will overwrite current settings)${NC}"
         echo "${YELLOW}\t - Brutal Doom${NC}"
         echo "${YELLOW}\t - High Res Texture Pack${NC}"
@@ -183,7 +183,6 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         echo -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
         fi
-    
     
     ctrl_c() { echo; echo; exit 0; }
     
