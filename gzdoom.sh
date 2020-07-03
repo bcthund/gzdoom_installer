@@ -17,6 +17,9 @@ cyan='\033[0;36m'
 CYAN='\033[1;36m'
 NC='\033[0m'
 
+# Save the working directory of the script
+working_dir=$PWD
+
 if [ "$1" != "${1#[debug]}" ] ;then
     cmd(){ echo ">> ${WHITE}$1${NC}"; }
     echo "${RED}DEBUG: Commands will be echoed to console${NC}"
@@ -73,7 +76,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         cmd "ls -al"
         ctrl_c() {
             echo;
-            cmd "cd ../../../..";
+            cmd "cd $working_dir"
             cmd "rm -rf ./src/gzdoom_tmp";
             echo;
             exit 0;
@@ -99,7 +102,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo
         printf "${BLUE}ZMusic: Leaving './src/gzdoom_tmp/zmusic/build'${NC}\n"
-        cmd "cd ../../../..";
+        cmd "cd $working_dir"
         ctrl_c() { echo; echo; exit 0; }
 
     # gzdoom: build and install
@@ -108,7 +111,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         cmd "cd ./src/gzdoom_tmp/gzdoom/build/"
         ctrl_c() {
             echo;
-            cmd "cd ../../../..";
+            cmd "cd $working_dir"
             cmd "sudo rm -rf ./src/gzdoom_tmp";
             echo;
             exit 0;
@@ -137,7 +140,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo
         printf "${BLUE}gzdoom: Leaving './src/gzdoom_tmp/gzdoom/build'${NC}\n"
-        cmd "cd ../../../..";
+        cmd "cd $working_dir"
         ctrl_c() {
             echo;
             cmd "rm -rf ./src/gzdoom_tmp";
