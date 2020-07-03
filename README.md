@@ -12,15 +12,17 @@ You are given the option to 'make install' gzdoom if you desire, if you do not t
 The final step will ask if you want to install the Addons which includes Brutal Doom, high resolution textures, and recomposed music as well as a few other items. You will need to download the Addon zip file from <a href="https://drive.google.com/file/d/1xYo4_OEfLFkCZ7vyHQTBPJ2yC10h0g5g/view?usp=sharing">HERE</a> and extract it into the base folder. You should end up with a './src/gzdoom-src/config' folder. This should be done before starting the gzdoom.sh install script.
 
 # Usage
-<code>chmod +x gzdoom.sh</code>
+<pre>
+  <code>chmod +x gzdoom.sh</code>
 
-Live run:
-This will prompt you with a series of questions and perform the actions, making changes to your filesystem.
-<code>./gzdoom.sh</code>
+  Live run:
+    This will prompt you with a series of questions and perform the actions, making changes to your filesystem.
+    <code>./gzdoom.sh</code>
 
-Debug:
-This will prompt you with a series of questions but will not actually perform them. It will echo the command that would be run so you can do a dry run first.
-<code>./gzdoom.sh debug</code>
+  Debug:<br>
+    This will prompt you with a series of questions but will not actually perform them. It will echo the command that would be run so you can do a dry run first.
+    <code>./gzdoom.sh debug</code>
+</pre>
 
 # Packages for Reference (installed automatically):
 <pre>
