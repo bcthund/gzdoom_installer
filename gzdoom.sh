@@ -49,6 +49,13 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     # Create Directories
         echo
         printf "${BLUE}Create tmp directories${NC}"
+        if [ -d "./src/gzdoom_tmp" ] ;then
+            printf "${BLUE}Temp directory already exists, remove first? ${NC}"
+            read answer
+            if [ "$answer" != "${answer#[Yy]}" ] ;then
+                cmd "sudo rm -rf ./src/gzdoom_tmp"
+            fi
+        fi
         cmd "mkdir -pv ./src/gzdoom_tmp/gzdoom/build"
         cmd "mkdir -pv ./src/gzdoom_tmp/zmusic/build"
         
