@@ -62,8 +62,8 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
             echo "${BLUE}Pulling gzdoom${NC}"
             cmd "git clone git://github.com/coelckers/gzdoom.git ./src/gzdoom_tmp/gzdoom/git"
         else
-            cmd "ln -sr ./gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
-            cmd "ln -sr ./gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
+            cmd "ln -sr ./src/gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
+            cmd "ln -sr ./src/gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
         fi
 
     # ZMusic: build and install
