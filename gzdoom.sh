@@ -42,7 +42,7 @@ echo
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     # Dependencies
         printf "${BLUE}Install Dependencies${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "sudo apt install g++ make cmake libsdl2-dev git zlib1g-dev libbz2-dev libjpeg-dev libfluidsynth-dev libgme-dev libopenal-dev libmpg123-dev libsndfile1-dev libgtk-3-dev timidity nasm libgl1-mesa-dev tar libsdl1.2-dev libglew-dev"
         fi
         
@@ -91,19 +91,19 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo
         printf "${BLUE}ZMusic: Run 'cmake'${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "cmake ../git/ -DCMAKE_BUILD_TYPE=Release"
         fi
         
         echo
         printf "${BLUE}ZMusic: Run 'make install'${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "sudo make install"
         fi
         
         echo
         printf "${BLUE}ZMusic: Run 'ldconfig'${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "sudo ldconfig"
         fi
         
@@ -126,7 +126,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo
         printf "${BLUE}gzdoom: Run 'cmake'${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             a='' && [ "$(uname -m)" = x86_64 ] && a=64
             c="$(lscpu -p | grep -v '#' | sort -u -t , -k 2,4 | wc -l)"
             [ "$c" -eq 0 ] && c=1
@@ -141,7 +141,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo
         printf "${BLUE}gzdoom: Run make${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "make -j$c"
         fi
         
@@ -158,40 +158,47 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     # Install to Games
         echo
         printf "${BLUE}Install to ~/Games/gzdoom ${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "sudo mv ./src/gzdoom_tmp/gzdoom/build /home/$USER/Games/gzdoom"
         fi
         
         echo
         printf "${BLUE}make install gzdoom${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "sudo make install -C ./src/gzdoom_tmp/gzdoom/build"
         fi
         
     # Removing build files
         echo
         printf "${BLUE}Remove './src/gzdoom_tmp'${NC}"
-        echo -n "${CYAN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
             cmd "rm -rf ./src/gzdoom_tmp";
         fi
     
     # gzdoom Extras
         echo
-        printf "${BLUE}Install Addons - You will need to download the config pack for this to work, see the README.${NC}"
-        echo "${YELLOW}\t - gzdoom.ini (will overwrite current settings)${NC}"
-        echo "${YELLOW}\t - Brutal Doom${NC}"
-        echo "${YELLOW}\t - High Res Texture Pack${NC}"
-        echo "${YELLOW}\t - Doom Metal Vol 4${NC}"
-        echo "${YELLOW}\t - Heretic High Resolution Textures${NC}"
-        echo "${YELLOW}\t - Heretic Music${NC}"
-        echo "${YELLOW}\t - Hexen High Resolution Textures${NC}"
-        echo "${YELLOW}\t - Hexen Music${NC}"
-        echo "${YELLOW}\t - Strife High Resolution Textures${NC}"
-        echo "${YELLOW}\t - Strife Voices${NC}"
-        echo "${YELLOW}\t - Strife Music${NC}"
-        echo "${YELLOW}\t - Chex Quest Music${NC}"
-        echo -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
-            cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
+        printf "${BLUE}Install (A)ddons or (R)estore Backup${NC}"
+        echo -n "${GREEN} (a/r)? ${NC}"; read answer; if [ "$answer" != "${answer#[Aa]}" ] ;then
+            echo
+            printf "${BLUE}Install Addons - You will need to download the config pack for this to work, see the README.${NC}"
+            echo "${grey}\t - gzdoom.ini (will overwrite current settings)${NC}"
+            echo "${grey}\t - Brutal Doom${NC}"
+            echo "${grey}\t - High Res Texture Pack${NC}"
+            echo "${grey}\t - Doom Metal Vol 4${NC}"
+            echo "${grey}\t - Heretic High Resolution Textures${NC}"
+            echo "${grey}\t - Heretic Music${NC}"
+            echo "${grey}\t - Hexen High Resolution Textures${NC}"
+            echo "${grey}\t - Hexen Music${NC}"
+            echo "${grey}\t - Strife High Resolution Textures${NC}"
+            echo "${grey}\t - Strife Voices${NC}"
+            echo "${grey}\t - Strife Music${NC}"
+            echo "${grey}\t - Chex Quest Music${NC}"
+            echo -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+                cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
+                
+            fi
+        else
+            cmd "sudo rsync -aR --info=progress2 --delete ./Migration_$USER/root/snap/gzdoom/current/.config/gzdoom/ /home/$USER/snap/gzdoom/current/.config/gzdoom/"
         fi
     
     ctrl_c() { echo; echo; exit 0; }
