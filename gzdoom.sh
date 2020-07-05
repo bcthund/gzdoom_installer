@@ -1,5 +1,4 @@
 #!/bin/sh
-clear
 grey='\033[1;30m'
 red='\033[0;31m'
 RED='\033[1;31m'
@@ -22,10 +21,10 @@ working_dir=$PWD
 
 if [ "$1" != "${1#[debug]}" ] ;then
     cmd(){ echo ">> ${WHITE}$1${NC}"; }
-    echo "${RED}DEBUG: Commands will be echoed to console${NC}"
+    #echo "${RED}DEBUG: Commands will be echoed to console${NC}"
 else
     cmd(){ eval $1; }
-    echo "${RED}LIVE: Actions will be performed! Use caution.${NC}"
+    #echo "${RED}LIVE: Actions will be performed! Use caution.${NC}"
 fi
 
 # trap ctrl-c and call ctrl_c()
@@ -33,9 +32,6 @@ ctrl_c() { echo; echo; exit 0; }
 trap ctrl_c INT
 
 echo
-echo "${green}==========================================================================${NC}"
-echo "${yellow}\tInstall from Source${NC}"
-echo "${green}--------------------------------------------------------------------------${NC}"
 echo -n "${CYAN}Install gzdoom (y/n)? ${NC}"
 read answer
 echo
