@@ -48,32 +48,36 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
     # Create Directories
         echo
-        printf "${BLUE}Create tmp directories${NC}"
+        printf "${BLUE}Create Temp Directories${NC}\n"
         if [ -d "./src/gzdoom_tmp" ] ;then
-            printf "${BLUE}Temp directory already exists, remove first? ${NC}"
+            printf "${BLUE}Build directory already exists, remove first? ${NC}\n"
+            printf "${YELLOW}If you leave the directoy, it will be used as-is for building.${NC}\n"
+            printf "${BLUE}Remove Directory? ${NC}"
             read answer
             if [ "$answer" != "${answer#[Yy]}" ] ;then
                 cmd "sudo rm -rf ./src/gzdoom_tmp"
             fi
         fi
-        cmd "mkdir -pv ./src/gzdoom_tmp/gzdoom/build"
-        cmd "mkdir -pv ./src/gzdoom_tmp/zmusic/build"
         
     # Grab Source
-        echo
-        echo -n "${BLUE}Pull current source from git (requires internet connection) (y/n)? ${NC}"
-        read source
-        echo
-        if [ "$source" != "${source#[Yy]}" ] ;then
-            echo "${BLUE}Pulling Zmusic${NC}"
-            cmd "git clone https://github.com/coelckers/ZMusic.git ./src/gzdoom_tmp/zmusic/git"
-            
+        if [ ! -d "./src/valkyrie_tmp" ] ;then
             echo
-            echo "${BLUE}Pulling gzdoom${NC}"
-            cmd "git clone git://github.com/coelckers/gzdoom.git ./src/gzdoom_tmp/gzdoom/git"
-        else
-            cmd "ln -sr ./src/gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
-            cmd "ln -sr ./src/gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
+            echo -n "${BLUE}Pull current source from git (requires internet connection) (y/n)? ${NC}"
+            read source
+            cmd "mkdir -pv ./src/gzdoom_tmp/gzdoom/build"
+            cmd "mkdir -pv ./src/gzdoom_tmp/zmusic/build"
+            echo
+            if [ "$source" != "${source#[Yy]}" ] ;then
+                echo "${BLUE}Pulling Zmusic${NC}"
+                cmd "git clone https://github.com/coelckers/ZMusic.git ./src/gzdoom_tmp/zmusic/git"
+                
+                echo
+                echo "${BLUE}Pulling gzdoom${NC}"
+                cmd "git clone git://github.com/coelckers/gzdoom.git ./src/gzdoom_tmp/gzdoom/git"
+            else
+                cmd "ln -sr ./src/gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
+                cmd "ln -sr ./src/gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
+            fi
         fi
 
     # ZMusic: build and install
