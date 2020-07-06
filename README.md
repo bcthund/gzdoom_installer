@@ -16,15 +16,14 @@ See also:
   * [fresh_install](https://github.com/bcthund/fresh_install)
 
 ## Usage
-```chmod +x gzdoom.sh```  
-<br>
-<u>**Live run:**</u>  
-This will prompt you with a series of questions and perform the actions, making changes to your filesystem.  
-```./gzdoom.sh```  
-<br>
-<u>**Debug:**</u>  
-This will prompt you with a series of questions but will not actually perform them. It will echo the command that would be run so you can do a dry run first.  
-```./gzdoom.sh debug```
+<pre>
+Usage: gzdoom.sh &lt;options&gt;
+
+Options:
+  -h, --help            show this help message and exit
+  -v, --verbose         print commands being run before running them
+  -d, --debug           print commands to be run but do not execute them
+</pre>
 
 ## Packages for Reference (installed automatically):
 <u>**All Dependencies**</u>

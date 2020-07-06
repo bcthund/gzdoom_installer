@@ -40,7 +40,7 @@ do
         ;;
         -h|--help)
         echo "${WHITE}"
-        echo "Usage: $0.sh <options>"
+        echo "Usage: $0 <options>"
         echo
         echo "Options:"
         echo "  -h, --help            show this help message and exit"
