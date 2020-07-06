@@ -158,11 +158,11 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         }
         
     # Install to Games
-        echo
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}Install to ~/Games/gzdoom ${NC}"
-        echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
-            cmd "sudo mv ./src/gzdoom_tmp/gzdoom/build /home/$USER/Games/gzdoom"
-        fi
+        #echo
+        #printf "${PURPLE}Source [gzdoom]: ${BLUE}Install to ~/Games/gzdoom ${NC}"
+        #echo -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        #    cmd "sudo mv ./src/gzdoom_tmp/gzdoom/build /home/$USER/Games/gzdoom"
+        #fi
         
         echo
         printf "${PURPLE}Source [gzdoom]: ${BLUE}make install gzdoom${NC}"
@@ -200,7 +200,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
                 
             fi
         else
-            cmd "sudo rsync -aR --info=progress2 --delete ./Migration_$USER/root/snap/gzdoom/current/.config/gzdoom/ /home/$USER/snap/gzdoom/current/.config/gzdoom/"
+            cmd "sudo rsync -aR --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom/ /home/$USER/.config/gzdoom/"
         fi
     
     ctrl_c() { echo; echo; exit 0; }
