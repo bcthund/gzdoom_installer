@@ -70,13 +70,16 @@ ctrl_c() { echo -e; echo -e; exit 0; }
 trap ctrl_c INT
 
 echo -e
-echo -e -n "${PURPLE}Install gzdoom (y/n)? ${NC}"
+echo -e -n "${PURPLE}Install gzdoom (y/n/a)? ${NC}"
 read answer
 echo -e
-if [ "$answer" != "${answer#[Yy]}" ] ;then
+if [ "$answer" != "${answer#[YyAa]}" ] ;then
+    if [ "$answer" != "${answer#[Aa]}" ] ;then answer2="y"; else answer2=""; fi
+
     # Dependencies
         printf "${PURPLE}Source [gzdoom]: ${BLUE}Install Dependencies${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "sudo apt install g++ make cmake libsdl2-dev git zlib1g-dev libbz2-dev libjpeg-dev libfluidsynth-dev libgme-dev libopenal-dev libmpg123-dev libsndfile1-dev libgtk-3-dev timidity nasm libgl1-mesa-dev tar libsdl1.2-dev libglew-dev"
         fi
         
@@ -86,31 +89,33 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         if [ -d "./src/gzdoom_tmp" ] ;then
             printf "${PURPLE}Source [gzdoom]: ${BLUE}Build directory already exists, remove first? ${NC}\n"
             printf "${YELLOW}If you leave the directoy, it will be used as-is for building.${NC}\n"
-            printf "${BLUE}Remove Directory? ${NC}"
-            read answer
-            if [ "$answer" != "${answer#[Yy]}" ] ;then
+            printf "${BLUE}Remove Directory${NC}"
+            if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+            if [ "$answer2" != "${answer2#[Yy]}" ] ;then
                 cmd "sudo rm -rf ./src/gzdoom_tmp"
             fi
         fi
         
+        
     # Grab Source
         if [ ! -d "./src/valkyrie_tmp" ] ;then
             echo -e
-            echo -e -n "${PURPLE}Source [gzdoom]: ${BLUE}Pull current source from git (requires internet connection) (y/n)? ${NC}"
-            read source
+            #echo -e -n "${PURPLE}Source [gzdoom]: ${BLUE}Pull current source from git (requires internet connection) (y/n)? ${NC}"
+            echo -e -n "${PURPLE}Source [gzdoom]: ${BLUE}Use provided source snapshot${NC}"
+            if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
             cmd "mkdir -pv ./src/gzdoom_tmp/gzdoom/build"
             cmd "mkdir -pv ./src/gzdoom_tmp/zmusic/build"
             echo -e
-            if [ "$source" != "${source#[Yy]}" ] ;then
+            if [ "$answer2" != "${answer2#[Yy]}" ] ;then
+                cmd "ln -sr ./src/gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
+                cmd "ln -sr ./src/gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
+            else
                 echo -e "${PURPLE}Source [gzdoom]: ${BLUE}Pulling Zmusic${NC}"
                 cmd "git clone https://github.com/coelckers/ZMusic.git ./src/gzdoom_tmp/zmusic/git"
                 
                 echo -e
                 echo -e "${PURPLE}Source [gzdoom]: ${BLUE}Pulling gzdoom${NC}"
                 cmd "git clone git://github.com/coelckers/gzdoom.git ./src/gzdoom_tmp/gzdoom/git"
-            else
-                cmd "ln -sr ./src/gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
-                cmd "ln -sr ./src/gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
             fi
         fi
 
@@ -129,19 +134,22 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Run 'cmake'${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "cmake ../git/ -DCMAKE_BUILD_TYPE=Release"
         fi
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Run 'make install'${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "sudo make install"
         fi
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Run 'ldconfig'${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "sudo ldconfig"
         fi
         
@@ -164,7 +172,8 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Run 'cmake'${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             a='' && [ "$(uname -m)" = x86_64 ] && a=64
             c="$(lscpu -p | grep -v '#' | sort -u -t , -k 2,4 | wc -l)"
             [ "$c" -eq 0 ] && c=1
@@ -179,7 +188,8 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Run make${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "make -j$c"
         fi
         
@@ -196,24 +206,27 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     # Install to Games
         #echo -e
         #printf "${PURPLE}Source [gzdoom]: ${BLUE}Install to ~/Games/gzdoom ${NC}"
-        #echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        #if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        #if [ "$answer2" != "${answer2#[Yy]}" ] ;then
         #    cmd "sudo mv ./src/gzdoom_tmp/gzdoom/build /home/$USER/Games/gzdoom"
         #fi
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}make install gzdoom${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "sudo make install -C ./src/gzdoom_tmp/gzdoom/build"
         fi
         
     # Removing build files
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}Remove './src/gzdoom_tmp'${NC}"
-        echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
             cmd "sudo rm -rf ./src/gzdoom_tmp";
         fi
     
-    # gzdoom Extras
+    # gzdoom Extras - Always ask
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}Install (A)ddons or (R)estore Backup${NC}"
         echo -e -n "${GREEN} (a/r)? ${NC}"; read answer; if [ "$answer" != "${answer#[Aa]}" ] ;then
@@ -233,7 +246,6 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
             echo -e "${grey}\t - Chex Quest Music${NC}"
             echo -e -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
                 cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
-                
             fi
         else
             cmd "sudo rsync -a --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom /home/$USER/.config/"
