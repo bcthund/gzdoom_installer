@@ -235,7 +235,8 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
                 
             fi
         else
-            cmd "sudo rsync -aR --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom/ /home/$USER/.config/gzdoom/"
+            cmd "sudo rsync -a --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom /home/$USER/.config/"
+            #cmd "sudo rsync -aR --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom/ /home/$USER/.config/gzdoom/"
         fi
     
     ctrl_c() { echo; echo; exit 0; }
