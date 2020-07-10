@@ -23,6 +23,7 @@ working_dir=$PWD
 # Setup command
 DEBUG=false
 VERBOSE=false
+IN_TESTING=false
 FLAGS=""
 OTHER_ARGUMENTS=""
 
