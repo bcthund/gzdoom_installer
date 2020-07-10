@@ -39,6 +39,11 @@ do
         FLAGS="$FLAGS-v "
         shift # Remove --verbose from processing
         ;;
+        --in-testing)
+        IN_TESTING=true
+        FLAGS="$FLAGS--in-testing "
+        shift # Remove from processing
+        ;;
         -h|--help)
         echo -e "${WHITE}"
         echo -e "Usage: $0 <options>"
@@ -47,6 +52,7 @@ do
         echo -e "  -h, --help            show this help message and exit"
         echo -e "  -v, --verbose         print commands being run before running them"
         echo -e "  -d, --debug           print commands to be run but do not execute them"
+        echo -e "  --in-testing          Enable use of in-testing features"
         echo -e "${NC}"
         exit
         shift # Remove from processing
