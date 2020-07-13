@@ -8,8 +8,6 @@ The script comes with a copy of gzdoom and zmusic sources that were used when th
 
 Each stage of the script will confirm if you want to continue, giving you the option to stop should errors occur. Pressing CTRL+C is captured and will result in the script automatically removing the temporary build directories.
 
-You are given the option to 'make install' gzdoom if you desire, if you do not then you should say no to removing './src/gzdoom_tmp' when asked. The build will be in './src/gzdoom_tmp/gzdoom/build' which you can put where you like.
-
 The final step will ask if you want to install the Addons which includes Brutal Doom, high resolution textures, and recomposed music as well as a few other items. You will need to download the Addon zip file from [HERE](https://drive.google.com/file/d/1xYo4_OEfLFkCZ7vyHQTBPJ2yC10h0g5g/view?usp=sharing "Download Addons") and extract it into the base folder. You should end up with a './src/gzdoom-src/config' folder. This should be done before starting the gzdoom.sh install script.
 
 See also:
@@ -23,6 +21,10 @@ Options:
   -h, --help            show this help message and exit
   -v, --verbose         print commands being run before running them
   -d, --debug           print commands to be run but do not execute them
+  -a, --addons          automatically install addons (see README)
+  -n, --no-addons       do not install addons, and dont ask
+  --in-testing          Enable use of in-testing features
+  --tmp=DIRECTORY       not used, passed from fresh_install script
 </pre>
 
 ## Packages for Reference (installed automatically):
