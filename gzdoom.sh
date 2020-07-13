@@ -24,6 +24,11 @@ working_dir=$PWD
 DEBUG=false
 VERBOSE=false
 IN_TESTING=false
+EXTRACT=true
+ADDONS=false
+NO_ADDONS=false
+TMP_DIR=""
+SRC_DIR=""
 FLAGS=""
 OTHER_ARGUMENTS=""
 
@@ -40,6 +45,16 @@ do
         FLAGS="$FLAGS-v "
         shift # Remove --verbose from processing
         ;;
+        -a|--addons)
+        ADDONS=true
+        FLAGS="$FLAGS-a "
+        shift # Remove from processing
+        ;;
+        -n|--no-addons)
+        NO_ADDONS=true
+        FLAGS="$FLAGS-n "
+        shift # Remove from processing
+        ;;
         --in-testing)
         IN_TESTING=true
         FLAGS="$FLAGS--in-testing "
@@ -53,9 +68,18 @@ do
         echo -e "  -h, --help            show this help message and exit"
         echo -e "  -v, --verbose         print commands being run before running them"
         echo -e "  -d, --debug           print commands to be run but do not execute them"
+        echo -e "  -a, --addons          automatically install addons (see README)"
+        echo -e "  -n, --no-addons       do not install addons, and dont ask"
         echo -e "  --in-testing          Enable use of in-testing features"
+        #echo -e "  --tmp=DIRECTORY       not used, passed from fresh_install script"
         echo -e "${NC}"
         exit
+        shift # Remove from processing
+        ;;
+        --tmp=*)
+        EXTRACT=false
+        TMP_DIR="$(echo ${arg#*=} | sed 's:/*$::')"
+        FLAGS="$FLAGS--tmp=${TMP_DIR} "
         shift # Remove from processing
         ;;
         *)
@@ -92,52 +116,52 @@ if [ "$answer" != "${answer#[YyAa]}" ] ;then
         
     # Create Directories
         echo -e
-        printf "${BLUE}Create Temp Directories${NC}\n"
-        if [ -d "./src/gzdoom_tmp" ] ;then
-            printf "${PURPLE}Source [gzdoom]: ${BLUE}Build directory already exists, remove first? ${NC}\n"
-            printf "${YELLOW}If you leave the directoy, it will be used as-is for building.${NC}\n"
-            printf "${BLUE}Remove Directory${NC}"
-            if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
-            if [ "$answer2" != "${answer2#[Yy]}" ] ;then
-                cmd "sudo rm -rf ./src/gzdoom_tmp"
+        printf "${BLUE}Create Temp Directory${NC}\n"
+        SRC_DIR=$(mktemp -d -t gzdoom-XXXXXX)
+        ctrl_c() {
+            cmd "cd '${working_dir}'"
+            echo -e;
+            echo -e -n "${BLUE}Do you want to remove temporary files in '${SRC_DIR}' ${GREEN}(y/n)? ${NC}"; read -e -i "y" answer; echo;
+            if [ "$answer" != "${answer#[Yy]}" ] ;then
+                eval "sudo rm -rf ${SRC_DIR}";
             fi
-        fi
-        
+            echo -e;
+            echo -e;
+            exit 0;
+        }
+        echo -e "${YELLOW}Temp directory: '${SRC_DIR}'${NC}"
         
     # Grab Source
-        if [ ! -d "./src/valkyrie_tmp" ] ;then
+        echo -e
+        echo -e -n "${PURPLE}Source [gzdoom]: ${BLUE}Use provided source snapshot${NC}"
+        if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
+        cmd "mkdir -pv ${TMP_DIR}/gzdoom/build"
+        cmd "mkdir -pv ${TMP_DIR}/zmusic/build"
+        echo -e
+        if [ "$answer2" != "${answer2#[Yy]}" ] ;then
+            cmd "ln -sr ./src/gzdoom-src/gzdoom/ ${TMP_DIR}/gzdoom/git"
+            cmd "ln -sr ./src/gzdoom-src/ZMusic/ ${TMP_DIR}/zmusic/git"
+        else
+            echo -e "${PURPLE}Source [gzdoom]: ${BLUE}Pulling Zmusic${NC}"
+            cmd "git clone https://github.com/coelckers/ZMusic.git ${TMP_DIR}/zmusic/git"
+            
             echo -e
-            #echo -e -n "${PURPLE}Source [gzdoom]: ${BLUE}Pull current source from git (requires internet connection) (y/n)? ${NC}"
-            echo -e -n "${PURPLE}Source [gzdoom]: ${BLUE}Use provided source snapshot${NC}"
-            if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
-            cmd "mkdir -pv ./src/gzdoom_tmp/gzdoom/build"
-            cmd "mkdir -pv ./src/gzdoom_tmp/zmusic/build"
-            echo -e
-            if [ "$answer2" != "${answer2#[Yy]}" ] ;then
-                cmd "ln -sr ./src/gzdoom-src/gzdoom/ ./src/gzdoom_tmp/gzdoom/git"
-                cmd "ln -sr ./src/gzdoom-src/ZMusic/ ./src/gzdoom_tmp/zmusic/git"
-            else
-                echo -e "${PURPLE}Source [gzdoom]: ${BLUE}Pulling Zmusic${NC}"
-                cmd "git clone https://github.com/coelckers/ZMusic.git ./src/gzdoom_tmp/zmusic/git"
-                
-                echo -e
-                echo -e "${PURPLE}Source [gzdoom]: ${BLUE}Pulling gzdoom${NC}"
-                cmd "git clone git://github.com/coelckers/gzdoom.git ./src/gzdoom_tmp/gzdoom/git"
-            fi
+            echo -e "${PURPLE}Source [gzdoom]: ${BLUE}Pulling gzdoom${NC}"
+            cmd "git clone git://github.com/coelckers/gzdoom.git ${TMP_DIR}/gzdoom/git"
         fi
 
     # ZMusic: build and install
         echo -e
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Entering './src/gzdoom_tmp/zmusic/build'${NC}\n"
-        cmd "cd ./src/gzdoom_tmp/zmusic/build"
+        printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Entering '${TMP_DIR}/zmusic/build'${NC}\n"
+        cmd "cd ${TMP_DIR}/zmusic/build"
         cmd "ls -al"
-        ctrl_c() {
-            echo -e;
-            cmd "cd '${working_dir}'"
-            cmd "sudo rm -rf ./src/gzdoom_tmp";
-            echo -e;
-            exit 0;
-        }
+#         ctrl_c() {
+#             echo -e;
+#             cmd "cd '${working_dir}'"
+#             cmd "sudo rm -rf ./src/gzdoom_tmp";
+#             echo -e;
+#             exit 0;
+#         }
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Run 'cmake'${NC}"
@@ -161,21 +185,21 @@ if [ "$answer" != "${answer#[YyAa]}" ] ;then
         fi
         
         echo -e
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Leaving './src/gzdoom_tmp/zmusic/build'${NC}\n"
+        printf "${PURPLE}Source [gzdoom]: ${BLUE}ZMusic: Leaving '${SRC_DIR}/zmusic/build'${NC}\n"
         cmd "cd '${working_dir}'"
-        ctrl_c() { echo -e; echo -e; exit 0; }
+#         ctrl_c() { echo -e; echo -e; exit 0; }
 
     # gzdoom: build and install
         echo -e
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Entering './src/gzdoom_tmp/gzdoom/build'${NC}\n"
-        cmd "cd ./src/gzdoom_tmp/gzdoom/build/"
-        ctrl_c() {
-            echo -e;
-            cmd "cd '${working_dir}'"
-            cmd "sudo rm -rf ./src/gzdoom_tmp";
-            echo -e;
-            exit 0;
-        }
+        printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Entering '${SRC_DIR}/gzdoom/build'${NC}\n"
+        cmd "cd ${SRC_DIR}/gzdoom/build/"
+#         ctrl_c() {
+#             echo -e;
+#             cmd "cd '${working_dir}'"
+#             cmd "sudo rm -rf ${SRC_DIR}";
+#             echo -e;
+#             exit 0;
+#         }
         
         echo -e
         printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Run 'cmake'${NC}"
@@ -201,14 +225,14 @@ if [ "$answer" != "${answer#[YyAa]}" ] ;then
         fi
         
         echo -e
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Leaving './src/gzdoom_tmp/gzdoom/build'${NC}\n"
+        printf "${PURPLE}Source [gzdoom]: ${BLUE}gzdoom: Leaving '${SRC_DIR}/gzdoom/build'${NC}\n"
         cmd "cd '${working_dir}'"
-        ctrl_c() {
-            echo -e;
-            cmd "sudo rm -rf ./src/gzdoom_tmp";
-            echo -e;
-            exit 0;
-        }
+#         ctrl_c() {
+#             echo -e;
+#             cmd "sudo rm -rf ./src/gzdoom_tmp";
+#             echo -e;
+#             exit 0;
+#         }
         
     # Install to Games
         #echo -e
@@ -222,42 +246,67 @@ if [ "$answer" != "${answer#[YyAa]}" ] ;then
         printf "${PURPLE}Source [gzdoom]: ${BLUE}make install gzdoom${NC}"
         if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
         if [ "$answer2" != "${answer2#[Yy]}" ] ;then
-            cmd "sudo make install -C ./src/gzdoom_tmp/gzdoom/build"
+            cmd "sudo make install -C ${SRC_DIR}/gzdoom/build"
         fi
         
     # Removing build files
         echo -e
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}Remove './src/gzdoom_tmp'${NC}"
+        printf "${PURPLE}Source [gzdoom]: ${BLUE}Remove '${SRC_DIR}'${NC}"
         if [ "$answer" != "${answer#[Yy]}" ] ;then printf " ${GREEN}(y/n)? ${NC} "; read answer2; else echo; fi
         if [ "$answer2" != "${answer2#[Yy]}" ] ;then
-            cmd "sudo rm -rf ./src/gzdoom_tmp";
+            cmd "sudo rm -rf ${SRC_DIR}";
         fi
     
-    # gzdoom Extras - Always ask
-        echo -e
-        printf "${PURPLE}Source [gzdoom]: ${BLUE}Install (A)ddons or (R)estore Backup${NC}"
-        echo -e -n "${GREEN} (a/r)? ${NC}"; read answer; if [ "$answer" != "${answer#[Aa]}" ] ;then
+    # gzdoom Extras
+        if [ "$NO_ADDONS" = false ]; then
             echo -e
-            printf "${BLUE}Install Addons - You will need to download the config pack for this to work, see the README.${NC}"
-            echo -e "${grey}\t - gzdoom.ini (will overwrite current settings)${NC}"
-            echo -e "${grey}\t - Brutal Doom${NC}"
-            echo -e "${grey}\t - High Res Texture Pack${NC}"
-            echo -e "${grey}\t - Doom Metal Vol 4${NC}"
-            echo -e "${grey}\t - Heretic High Resolution Textures${NC}"
-            echo -e "${grey}\t - Heretic Music${NC}"
-            echo -e "${grey}\t - Hexen High Resolution Textures${NC}"
-            echo -e "${grey}\t - Hexen Music${NC}"
-            echo -e "${grey}\t - Strife High Resolution Textures${NC}"
-            echo -e "${grey}\t - Strife Voices${NC}"
-            echo -e "${grey}\t - Strife Music${NC}"
-            echo -e "${grey}\t - Chex Quest Music${NC}"
-            echo -e -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
-                cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
+            printf "${PURPLE}Source [gzdoom]: ${BLUE}Install Addons${NC}"
+            if [ "$ADDONS" = false ]; then echo -e -n "${GREEN} (y/n)? ${NC}"; read answer; fi
+            if [ "$answer" != "${answer#[Yy]}" ] || [ "$ADDONS" = true ] ;then
+                echo -e
+                printf "${BLUE}Install Addons - You will need to download the config pack for this to work, see the README.${NC}"
+                echo -e "${grey}\t - gzdoom.ini (will overwrite current settings)${NC}"
+                echo -e "${grey}\t - Brutal Doom${NC}"
+                echo -e "${grey}\t - High Res Texture Pack${NC}"
+                echo -e "${grey}\t - Doom Metal Vol 4${NC}"
+                echo -e "${grey}\t - Heretic High Resolution Textures${NC}"
+                echo -e "${grey}\t - Heretic Music${NC}"
+                echo -e "${grey}\t - Hexen High Resolution Textures${NC}"
+                echo -e "${grey}\t - Hexen Music${NC}"
+                echo -e "${grey}\t - Strife High Resolution Textures${NC}"
+                echo -e "${grey}\t - Strife Voices${NC}"
+                echo -e "${grey}\t - Strife Music${NC}"
+                echo -e "${grey}\t - Chex Quest Music${NC}"
+                echo -e -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+                    cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
+                fi
             fi
-        else
-            cmd "sudo rsync -a --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom /home/$USER/.config/"
-            #cmd "sudo rsync -aR --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom/ /home/$USER/.config/gzdoom/"
         fi
+    
+    
+#         echo -e
+#         printf "${PURPLE}Source [gzdoom]: ${BLUE}Install (A)ddons or (R)estore Backup${NC}"
+#         echo -e -n "${GREEN} (a/r)? ${NC}"; read answer; if [ "$answer" != "${answer#[Aa]}" ] ;then
+#             echo -e
+#             printf "${BLUE}Install Addons - You will need to download the config pack for this to work, see the README.${NC}"
+#             echo -e "${grey}\t - gzdoom.ini (will overwrite current settings)${NC}"
+#             echo -e "${grey}\t - Brutal Doom${NC}"
+#             echo -e "${grey}\t - High Res Texture Pack${NC}"
+#             echo -e "${grey}\t - Doom Metal Vol 4${NC}"
+#             echo -e "${grey}\t - Heretic High Resolution Textures${NC}"
+#             echo -e "${grey}\t - Heretic Music${NC}"
+#             echo -e "${grey}\t - Hexen High Resolution Textures${NC}"
+#             echo -e "${grey}\t - Hexen Music${NC}"
+#             echo -e "${grey}\t - Strife High Resolution Textures${NC}"
+#             echo -e "${grey}\t - Strife Voices${NC}"
+#             echo -e "${grey}\t - Strife Music${NC}"
+#             echo -e "${grey}\t - Chex Quest Music${NC}"
+#             echo -e -n "${CYAN}Continue (y/n)? ${NC}"; read answer; if [ "$answer" != "${answer#[Yy]}" ] ;then
+#                 cmd "sudo cp --preserve=all -rT ./src/gzdoom_src/config ~/.config/gzdoom";
+#             fi
+#         else
+#             cmd "sudo rsync -a --info=progress2 --delete ./Migration_$USER/root/home/$USER/.config/gzdoom /home/$USER/.config/"
+#         fi
     
     ctrl_c() { echo -e; echo -e; exit 0; }
     
